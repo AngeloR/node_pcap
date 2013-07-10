@@ -973,7 +973,7 @@ var dns_util = {
         return dns_util.readName(raw_packet, offset, internal_offset, result);
     },
     decodeRR: function(raw_packet, offset, internal_offset, result) {
-        if(internal_offset > raw_packet.pcap_header.len) {
+        if(raw_packet.pcap_header && internal_offset > raw_packet.pcap_header.len) {
             throw new Error("Malformed DNS RR. Offset is larger than the size of the packet (decodeRR). offset: " + offset + ", internal_offset: " + internal_offset + ", packet length: " + raw_packet.pcap_header.len);
         }
         var compressedName = raw_packet[internal_offset];
@@ -1043,7 +1043,7 @@ decode.dns = function (raw_packet, offset) {
         ret.question[i] = {};
         question_done = false;
         parts = [];
-        while (!question_done && internal_offset < raw_packet.pcap_header.caplen) {
+		while (!question_done && raw_packet.pcap_header && internal_offset < raw_packet.pcap_header.caplen) {
             len = raw_packet[internal_offset];
             if (len > 0) {
                 parts.push(raw_packet.toString("ascii", internal_offset + 1, internal_offset + 1 + len));
